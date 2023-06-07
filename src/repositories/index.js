@@ -1,3 +1,3 @@
 module.exports = {
-    BookingRepository: require("./booking_repository");
+    BookingRepository: require("./booking_repository")
 };
