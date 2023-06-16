@@ -3,7 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 
 const AppError = require("../utils/errors/app_error");
 const { BookingRepository } = require("../repositories");
-const { ServerConfig } = require("../config");
+const { ServerConfig, Queue } = require("../config");
 
 const db = require("../models");
 
@@ -60,8 +60,14 @@ async function makePayment(data) {
         }
         // we assume payment was successful
         await bookingRepository.update(data.bookingId, { status: BOOKED }, transaction);
-        await transaction.commit();
 
+        Queue.sendData({
+            recipientEmail: "arunrawatjuly@gmail.com",
+            subject: "Flight Booked",
+            text: `Booking successfully done for the booking ${data.bookingId}`
+        });
+
+        await transaction.commit();
     } catch (error) {
         await transaction.rollback();
         throw error;
